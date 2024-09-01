@@ -14,8 +14,8 @@ def make_scad(**kwargs):
         filter = ""
         #filter = "test"
 
-        kwargs["save_type"] = "none"
-        #kwargs["save_type"] = "all"
+        #kwargs["save_type"] = "none"
+        kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
         
@@ -28,7 +28,7 @@ def make_scad(**kwargs):
         kwargs["size"] = "oobb"
         kwargs["width"] = 1
         kwargs["height"] = 1
-        kwargs["thickness"] = 3
+        kwargs["thickness"] = 9
         
     # project_variables
     if True:
@@ -45,8 +45,9 @@ def make_scad(**kwargs):
         part = copy.deepcopy(part_default)
         p3 = copy.deepcopy(kwargs)
         #p3["thickness"] = 6
+        p3["extra"] = "m5_screw_wood_to_m6_bolt"
         part["kwargs"] = p3
-        part["name"] = "base"
+        part["name"] = "adapter"
         parts.append(part)
 
         
@@ -87,6 +88,77 @@ def get_base(thing, **kwargs):
     p3["depth"] = depth
     p3["holes"] = "perimeter"
     #p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)         
+    p3["pos"] = pos1
+    oobb_base.append_full(thing,**p3)
+
+    if prepare_print:
+        #put into a rotation object
+        components_second = copy.deepcopy(thing["components"])
+        return_value_2 = {}
+        return_value_2["type"]  = "rotation"
+        return_value_2["typetype"]  = "p"
+        pos1 = copy.deepcopy(pos)
+        pos1[0] += 50
+        return_value_2["pos"] = pos1
+        return_value_2["rot"] = [180,0,0]
+        return_value_2["objects"] = components_second
+        
+        thing["components"].append(return_value_2)
+
+    
+        #add slice # top
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "n"
+        p3["shape"] = f"oobb_slice"
+        #p3["m"] = "#"
+        oobb_base.append_full(thing,**p3)
+    
+###### utilities
+
+def get_adapter(thing, **kwargs):
+
+    depth = kwargs.get("thickness", 4)
+    prepare_print = kwargs.get("prepare_print", False)
+    extra = kwargs.get("extra", "")
+    #extra piece before "to"
+    rad_name = extra.split("_to_")[0]
+
+    pos = kwargs.get("pos", [0, 0, 0])
+    #pos = copy.deepcopy(pos)
+    #pos[2] += -20
+
+    #add cylinder top
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_cylinder"    
+    p3["depth"] = 5
+    p3["radius"] = 14/2
+    #p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)             
+    p3["pos"] = pos1
+    p3["zz"] = "top"
+    oobb_base.append_full(thing,**p3)
+    
+    #add cylinder sheath
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_cylinder"
+    p3["depth"] = depth
+    p3["radius"] = 5.75/2
+    #p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)
+    p3["pos"] = pos1
+    p3["zz"] = "top"
+    oobb_base.append_full(thing,**p3)
+
+    #add holes
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_screw_countersunk"
+    p3["radius_name"] = rad_name
+    p3["depth"] = depth
+    p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
     oobb_base.append_full(thing,**p3)
