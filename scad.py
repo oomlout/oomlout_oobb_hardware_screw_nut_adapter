@@ -164,7 +164,7 @@ def get_adapter(thing, **kwargs):
     p3["shape"] = f"oobb_screw_countersunk"
     p3["radius_name"] = rad_name
     p3["depth"] = depth
-    #p3["m"] = "#"
+    p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
     oobb_base.append_full(thing,**p3)
