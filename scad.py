@@ -42,13 +42,17 @@ def make_scad(**kwargs):
         part_default["full_shift"] = [0, 0, 0]
         part_default["full_rotations"] = [0, 0, 0]
         
-        part = copy.deepcopy(part_default)
-        p3 = copy.deepcopy(kwargs)
-        #p3["thickness"] = 6
-        p3["extra"] = "m5_screw_wood_to_m6_bolt"
-        part["kwargs"] = p3
-        part["name"] = "adapter"
-        parts.append(part)
+
+        sizes = ["m5", "m4", "m3d5", "m3"]
+
+        for size in sizes:
+            part = copy.deepcopy(part_default)
+            p3 = copy.deepcopy(kwargs)
+            #p3["thickness"] = 6
+            p3["extra"] = f"{size}_screw_wood_to_m6_bolt"
+            part["kwargs"] = p3
+            part["name"] = "adapter"
+            parts.append(part)
 
         
     #make the parts
@@ -80,6 +84,8 @@ def get_base(thing, **kwargs):
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
     oobb_base.append_full(thing,**p3)
+    
+    
     #add holes
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
