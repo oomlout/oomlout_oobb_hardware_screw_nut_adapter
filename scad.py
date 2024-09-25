@@ -14,7 +14,7 @@ def make_scad(**kwargs):
         filter = ""
         #filter = "test"
 
-        #kwargs["save_type"] = "none"
+        kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
@@ -44,15 +44,21 @@ def make_scad(**kwargs):
         
 
         sizes = ["m5", "m4", "m3d5", "m3"]
+        extras = ["","wide"]
+        tos = ["m6_bolt", "flat"]
 
         for size in sizes:
-            part = copy.deepcopy(part_default)
-            p3 = copy.deepcopy(kwargs)
-            #p3["thickness"] = 6
-            p3["extra"] = f"{size}_screw_wood_to_m6_bolt"
-            part["kwargs"] = p3
-            part["name"] = "adapter"
-            parts.append(part)
+            for extra in extras:
+                for to in tos:
+                    part = copy.deepcopy(part_default)
+                    p3 = copy.deepcopy(kwargs)
+                    #p3["thickness"] = 6
+                    p3["extra"] = f"{size}_screw_wood_to_{to}"
+                    if extra != "":
+                        p3["extra"] += f"_{extra}"
+                    part["kwargs"] = p3
+                    part["name"] = "adapter"
+                    parts.append(part)
 
         
     #make the parts
@@ -127,6 +133,7 @@ def get_adapter(thing, **kwargs):
     depth = kwargs.get("thickness", 4)
     prepare_print = kwargs.get("prepare_print", False)
     extra = kwargs.get("extra", "")
+
     #extra piece before "to"
     rad_name = extra.split("_to_")[0]
 
@@ -138,8 +145,10 @@ def get_adapter(thing, **kwargs):
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
     p3["shape"] = f"oobb_cylinder"    
-    p3["depth"] = 7
+    p3["depth"] = 7    
     p3["radius"] = 14/2
+    if "wide" in extra:
+        p3["radius"] = 30/2
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)             
     p3["pos"] = pos1
@@ -147,16 +156,17 @@ def get_adapter(thing, **kwargs):
     oobb_base.append_full(thing,**p3)
     
     #add cylinder sheath
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "p"
-    p3["shape"] = f"oobb_cylinder"
-    p3["depth"] = depth
-    p3["radius"] = 5.75/2
-    #p3["m"] = "#"
-    pos1 = copy.deepcopy(pos)
-    p3["pos"] = pos1
-    p3["zz"] = "top"
-    oobb_base.append_full(thing,**p3)
+    if "to_bolt" in extra:
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "p"
+        p3["shape"] = f"oobb_cylinder"
+        p3["depth"] = depth
+        p3["radius"] = 5.75/2
+        #p3["m"] = "#"
+        pos1 = copy.deepcopy(pos)
+        p3["pos"] = pos1
+        p3["zz"] = "top"
+        oobb_base.append_full(thing,**p3)
 
     #add holes
     p3 = copy.deepcopy(kwargs)
