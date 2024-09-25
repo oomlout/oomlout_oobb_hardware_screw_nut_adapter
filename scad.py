@@ -156,7 +156,7 @@ def get_adapter(thing, **kwargs):
     oobb_base.append_full(thing,**p3)
     
     #add cylinder sheath
-    if "to_bolt" in extra:
+    if "_bolt" in extra:
         p3 = copy.deepcopy(kwargs)
         p3["type"] = "p"
         p3["shape"] = f"oobb_cylinder"
