@@ -44,18 +44,16 @@ def make_scad(**kwargs):
         
 
         sizes = ["m5", "m4", "m3d5", "m3"]
-        extras = ["","wide"]
+        diams = ["14","30","45","60"]
         tos = ["m6_bolt", "flat"]
 
         for size in sizes:
-            for extra in extras:
+            for diam in diams:
                 for to in tos:
                     part = copy.deepcopy(part_default)
                     p3 = copy.deepcopy(kwargs)
                     #p3["thickness"] = 6
-                    p3["extra"] = f"{size}_screw_wood_to_{to}"
-                    if extra != "":
-                        p3["extra"] += f"_{extra}"
+                    p3["extra"] = f"{size}_screw_wood_{diam}_mm_diameter_to_{to}"
                     part["kwargs"] = p3
                     part["name"] = "adapter"
                     parts.append(part)
@@ -134,8 +132,14 @@ def get_adapter(thing, **kwargs):
     prepare_print = kwargs.get("prepare_print", False)
     extra = kwargs.get("extra", "")
 
+    
+
+    #diamaeter
+    diam = extra.split("_mm_diameter")[0]
+    diam = diam.split("_screw_wood_")[1]
+
     #extra piece before "to"
-    rad_name = extra.split("_to_")[0]
+    rad_name = extra.split(f"_{diam}_mm_diameter")[0]
 
     pos = kwargs.get("pos", [0, 0, 0])
     #pos = copy.deepcopy(pos)
@@ -146,9 +150,7 @@ def get_adapter(thing, **kwargs):
     p3["type"] = "p"
     p3["shape"] = f"oobb_cylinder"    
     p3["depth"] = 7    
-    p3["radius"] = 14/2
-    if "wide" in extra:
-        p3["radius"] = 30/2
+    p3["radius"] = float(diam) / 2
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)             
     p3["pos"] = pos1
