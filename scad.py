@@ -45,20 +45,27 @@ def make_scad(**kwargs):
 
         sizes = ["m5", "m4", "m3d5", "m3"]
         diams = ["14","30","45","60"]
-        tos = ["m6_bolt", "flat"]
+        tos = ["m6_bolt", "flat"] 
 
         for size in sizes:
             for diam in diams:
                 for to in tos:
+                    screw_size_depth_variable = f"screw_countersunk_height_{size}_screw_wood"
+                    screw_size_depth = oobb_base.gv(screw_size_depth_variable,"3dpr")
                     part = copy.deepcopy(part_default)
                     p3 = copy.deepcopy(kwargs)
-                    #p3["thickness"] = 6
+                    p3["thickness"] = screw_size_depth
                     p3["extra"] = f"{size}_screw_wood_{diam}_mm_diameter_to_{to}"
                     part["kwargs"] = p3
                     part["name"] = "adapter"
                     parts.append(part)
 
-        
+                    part = copy.deepcopy(part)
+                    p3 = copy.deepcopy(p3)
+                    p3["thickness"] = 9
+                    part["kwargs"] = p3
+                    parts.append(part)
+                
     #make the parts
     if True:
         for part in parts:
@@ -149,7 +156,7 @@ def get_adapter(thing, **kwargs):
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
     p3["shape"] = f"oobb_cylinder"    
-    p3["depth"] = 7    
+    p3["depth"] = depth    
     p3["radius"] = float(diam) / 2
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)             
