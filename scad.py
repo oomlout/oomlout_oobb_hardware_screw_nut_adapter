@@ -43,19 +43,27 @@ def make_scad(**kwargs):
         part_default["full_rotations"] = [0, 0, 0]
         
 
-        sizes = ["m5", "m4", "m3d5", "m3"]
+        sizes  = []
+        sizes2 = ["m5", "m4", "m3d5", "m3"]
+        
+        for size in sizes2:
+            sizes.append(f"{size}_screw_wood")
+        sizes.append("m3")
+        #sizes.append("m4")
+        sizes.append("m2d5")
+        sizes.append("m2")
         diams = ["14","30","45","60"]
         tos = ["m6_bolt", "flat"] 
 
         for size in sizes:
             for diam in diams:
                 for to in tos:
-                    screw_size_depth_variable = f"screw_countersunk_height_{size}_screw_wood"
+                    screw_size_depth_variable = f"screw_countersunk_height_{size}"
                     screw_size_depth = oobb_base.gv(screw_size_depth_variable,"3dpr")
                     part = copy.deepcopy(part_default)
                     p3 = copy.deepcopy(kwargs)
                     p3["thickness"] = screw_size_depth
-                    p3["extra"] = f"{size}_screw_wood_{diam}_mm_diameter_to_{to}"
+                    p3["extra"] = f"{size}_{diam}_mm_diameter_to_{to}"
                     part["kwargs"] = p3
                     part["name"] = "adapter"
                     parts.append(part)
@@ -143,7 +151,10 @@ def get_adapter(thing, **kwargs):
 
     #diamaeter
     diam = extra.split("_mm_diameter")[0]
-    diam = diam.split("_screw_wood_")[1]
+    if "_screw_wood_" in diam:
+        diam = diam.split("_screw_wood_")[1]
+    else:
+        diam = diam.split("_")[1]
 
     #extra piece before "to"
     rad_name = extra.split(f"_{diam}_mm_diameter")[0]
