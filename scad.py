@@ -15,7 +15,7 @@ def make_scad(**kwargs):
         #filter = "test"
 
         kwargs["save_type"] = "none"
-        #kwargs["save_type"] = "all"
+        kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
         
@@ -52,14 +52,26 @@ def make_scad(**kwargs):
         #sizes.append("m4")
         sizes.append("m2d5")
         sizes.append("m2")
+        #add nuts
+        sizes2 = ["m2d5_nut", "m3_nut", "m4_nut", "m5_nut", "m6_nut"]
+        for size in sizes2:
+            sizes.append(f"{size}")
+        
         diams = ["14","30","45","60"]
         tos = ["m6_bolt", "flat"] 
+
+        
 
         for size in sizes:
             for diam in diams:
                 for to in tos:
-                    screw_size_depth_variable = f"screw_countersunk_height_{size}"
-                    screw_size_depth = oobb_base.gv(screw_size_depth_variable,"3dpr")
+                    
+                    if "_nut" not in size:
+                        screw_size_depth_variable = f"screw_countersunk_height_{size}"
+                        screw_size_depth = oobb_base.gv(screw_size_depth_variable,"3dpr")
+                    else:                        
+                        screw_size_depth_variable = f"nut_depth_{size.replace('_nut','')}"
+                        screw_size_depth = oobb_base.gv(screw_size_depth_variable,"3dpr")
                     part = copy.deepcopy(part_default)
                     p3 = copy.deepcopy(kwargs)
                     p3["thickness"] = screw_size_depth
@@ -147,17 +159,32 @@ def get_adapter(thing, **kwargs):
     prepare_print = kwargs.get("prepare_print", False)
     extra = kwargs.get("extra", "")
 
-    
 
-    #diamaeter
+    
     diam = extra.split("_mm_diameter")[0]
+    
+    
+    nut = False
+    if "_nut" in diam:
+        nut = True
+    #diamaeter
+    
+    
     if "_screw_wood_" in diam:
         diam = diam.split("_screw_wood_")[1]
+    elif "_nut" in diam:
+            nut = True
+            diam = diam.split("_nut_")[1]
     else:
         diam = diam.split("_")[1]
 
+    
+        
+
+
     #extra piece before "to"
     rad_name = extra.split(f"_{diam}_mm_diameter")[0]
+    rad_name = rad_name.replace("_nut","")
 
     pos = kwargs.get("pos", [0, 0, 0])
     #pos = copy.deepcopy(pos)
@@ -167,7 +194,10 @@ def get_adapter(thing, **kwargs):
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
     p3["shape"] = f"oobb_cylinder"    
-    p3["depth"] = depth    
+    d = depth
+    if nut:
+        d = d+1.5
+    p3["depth"] = d
     p3["radius"] = float(diam) / 2
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)             
@@ -189,15 +219,33 @@ def get_adapter(thing, **kwargs):
         oobb_base.append_full(thing,**p3)
 
     #add holes
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "n"
-    p3["shape"] = f"oobb_screw_countersunk"
-    p3["radius_name"] = rad_name
-    p3["depth"] = depth
-    p3["m"] = "#"
-    pos1 = copy.deepcopy(pos)         
-    p3["pos"] = pos1
-    oobb_base.append_full(thing,**p3)
+    if not nut:
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "n"
+        p3["shape"] = f"oobb_screw_countersunk"
+        p3["radius_name"] = rad_name
+        p3["depth"] = depth
+        #p3["m"] = "#"
+        pos1 = copy.deepcopy(pos)         
+        p3["pos"] = pos1
+        oobb_base.append_full(thing,**p3)
+    elif nut:
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "n"
+        p3["shape"] = f"oobb_nut"        
+        p3["radius_name"] = rad_name
+        #p3["depth"] = depth
+        #p3["m"] = "#"
+        p3["zz"] = "top"
+        pos1 = copy.deepcopy(pos)         
+        p3["pos"] = pos1
+        oobb_base.append_full(thing,**p3)
+        #add hole
+        p4 = copy.deepcopy(p3)
+        p4["shape"] = f"oobb_hole"
+        p4["m"] = "#"
+        oobb_base.append_full(thing,**p4)
+
 
     if prepare_print:
         #put into a rotation object
