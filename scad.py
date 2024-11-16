@@ -2,6 +2,8 @@ import copy
 import opsc
 import oobb
 import oobb_base
+import yaml
+import os
 
 def main(**kwargs):
     make_scad(**kwargs)
@@ -13,6 +15,10 @@ def make_scad(**kwargs):
     if True:
         filter = ""
         #filter = "test"
+
+
+        navigation = False
+        navigation = True  
 
         kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
@@ -60,7 +66,7 @@ def make_scad(**kwargs):
         diams = ["14","30","45","60"]
         tos = ["m6_bolt", "flat"] 
 
-        
+        thicknesses = [3,6,9,12]
 
         for size in sizes:
             for diam in diams:
@@ -76,15 +82,20 @@ def make_scad(**kwargs):
                     p3 = copy.deepcopy(kwargs)
                     p3["thickness"] = screw_size_depth
                     p3["extra"] = f"{size}_{diam}_mm_diameter_to_{to}"
+                    p3["screw_size"] = size
+                    p3["diameter"] = diam
+                    p3["to"] = to
                     part["kwargs"] = p3
                     part["name"] = "adapter"
                     parts.append(part)
 
-                    part = copy.deepcopy(part)
-                    p3 = copy.deepcopy(p3)
-                    p3["thickness"] = 9
-                    part["kwargs"] = p3
-                    parts.append(part)
+        
+                    for thick in thicknesses:
+                        part = copy.deepcopy(part)
+                        p3 = copy.deepcopy(p3)
+                        p3["thickness"] = thick
+                        part["kwargs"] = p3
+                        parts.append(part)
                 
     #make the parts
     if True:
@@ -96,6 +107,23 @@ def make_scad(**kwargs):
                 print(f"done {part['name']}")
             else:
                 print(f"skipping {part['name']}")
+
+    if navigation:
+        sort = []
+        sort.append("to")
+        sort.append("screw_size")
+        sort.append("diameter")        
+        sort.append("thickness")
+        #sort.append("flange_extra")
+        #sort.append("flange_depth")
+        #sort.append("thickness")
+        #sort.append("screw_diameter")   
+        
+
+
+
+        generate_navigation(sort=sort)
+
 
 def get_base(thing, **kwargs):
 
@@ -299,6 +327,9 @@ def make_scad_generic(part):
         get_base(thing, **kwargs)   
     
 
+
+    folder = f"scad_output/{thing['id']}"
+
     for mode in modes:
         depth = thing.get(
             "depth_mm", thing.get("thickness_mm", 3))
@@ -310,7 +341,54 @@ def make_scad_generic(part):
             start = 1.5 - (layers / 2)*3
         if "bunting" in thing:
             start = 0.5
-        opsc.opsc_make_object(f'scad_output/{thing["id"]}/{mode}.scad', thing["components"], mode=mode, save_type=save_type, overwrite=overwrite, layers=layers, tilediff=tilediff, start=start)    
+        opsc.opsc_make_object(f'{folder}/{mode}.scad', thing["components"], mode=mode, save_type=save_type, overwrite=overwrite, layers=layers, tilediff=tilediff, start=start)  
+
+    yaml_file = f"{folder}/working.yaml"
+    with open(yaml_file, 'w') as file:
+        yaml.dump(part, file)
+
+def generate_navigation(folder="scad_output", sort=["width", "height", "thickness"]):
+    #crawl though all directories in scad_output and load all the working.yaml files
+    parts = {}
+    for root, dirs, files in os.walk(folder):
+        if 'working.yaml' in files:
+            yaml_file = os.path.join(root, 'working.yaml')
+            with open(yaml_file, 'r') as file:
+                part = yaml.safe_load(file)
+                # Process the loaded YAML content as needed
+                part["folder"] = root
+                part_name = root.replace(f"{folder}","")
+                
+                #remove all slashes
+                part_name = part_name.replace("/","").replace("\\","")
+                parts[part_name] = part
+
+                print(f"Loaded {yaml_file}: {part}")
+
+    pass
+    for part_id in parts:
+        part = parts[part_id]
+        kwarg_copy = copy.deepcopy(part["kwargs"])
+        folder_navigation = "navigation"
+        folder_source = part["folder"]
+        folder_extra = ""
+        for s in sort:
+            ex = kwarg_copy.get(s, "default")
+            folder_extra += f"{s}_{ex}/"
+        #replace "." with d
+        folder_extra = folder_extra.replace(".","d")
+        folder_destination = f"{folder_navigation}/{folder_extra}"
+        if not os.path.exists(folder_destination):
+            os.makedirs(folder_destination)
+        if os.name == 'nt':
+            #copy a full directory
+            command = f'xcopy "{folder_source}" "{folder_destination}" /E /I /Y'
+            print(command)
+            os.system(command)
+        else:
+            os.system(f"cp {folder_source} {folder_destination}")
+
+    
 
 
 if __name__ == '__main__':

@@ -1,0 +1,23 @@
+full_rotations:
+- 0
+- 0
+- 0
+full_shift:
+- 0
+- 0
+- 0
+kwargs:
+  diameter: '60'
+  extra: m4_nut_60_mm_diameter_to_flat
+  height: 1
+  modes:
+  - 3dpr
+  overwrite: true
+  save_type: all
+  screw_size: m4_nut
+  thickness: 3
+  to: flat
+  type: test_adapter
+  width: 1
+name: adapter
+project_name: test

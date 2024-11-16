@@ -1,0 +1,20 @@
+full_rotations:
+- 0
+- 0
+- 0
+full_shift:
+- 0
+- 0
+- 0
+kwargs:
+  extra: m2_60_mm_diameter_to_flat
+  height: 1
+  modes:
+  - 3dpr
+  overwrite: true
+  save_type: none
+  thickness: 9
+  type: test_adapter
+  width: 1
+name: adapter
+project_name: test

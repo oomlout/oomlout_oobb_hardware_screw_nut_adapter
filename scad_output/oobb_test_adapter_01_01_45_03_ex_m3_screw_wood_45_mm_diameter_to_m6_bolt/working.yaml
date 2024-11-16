@@ -1,0 +1,23 @@
+full_rotations:
+- 0
+- 0
+- 0
+full_shift:
+- 0
+- 0
+- 0
+kwargs:
+  diameter: '45'
+  extra: m3_screw_wood_45_mm_diameter_to_m6_bolt
+  height: 1
+  modes:
+  - 3dpr
+  overwrite: true
+  save_type: all
+  screw_size: m3_screw_wood
+  thickness: 3
+  to: m6_bolt
+  type: test_adapter
+  width: 1
+name: adapter
+project_name: test
