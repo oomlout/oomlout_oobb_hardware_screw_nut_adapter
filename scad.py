@@ -14,15 +14,17 @@ def make_scad(**kwargs):
     # save_type variables
     if True:
         filter = ""
-        #filter = "test"
+        #filter = "m2_14_mm_diameter_to_m6_bolt"
 
 
-        navigation = False
-        navigation = True  
 
-        kwargs["save_type"] = "none"
+        #kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
         
+    
+        #navigation = False        
+        navigation = True    
+
         kwargs["overwrite"] = True
         
         #kwargs["modes"] = ["3dpr", "laser", "true"]
@@ -101,7 +103,8 @@ def make_scad(**kwargs):
     if True:
         for part in parts:
             name = part.get("name", "default")
-            if filter in name:
+            extra = part.get("kwargs", {}).get("extra", "")
+            if filter in name or filter in extra:
                 print(f"making {part['name']}")
                 make_scad_generic(part)            
                 print(f"done {part['name']}")
@@ -110,10 +113,12 @@ def make_scad(**kwargs):
 
     if navigation:
         sort = []
-        sort.append("to")
         sort.append("screw_size")
-        sort.append("diameter")        
+        sort.append("diameter")  
         sort.append("thickness")
+        sort.append("to")        
+              
+        
         #sort.append("flange_extra")
         #sort.append("flange_depth")
         #sort.append("thickness")
@@ -127,6 +132,7 @@ def make_scad(**kwargs):
 
 def get_base(thing, **kwargs):
 
+    extra = kwargs.get("extra", "")
     depth = kwargs.get("thickness", 4)
     prepare_print = kwargs.get("prepare_print", False)
 
@@ -156,6 +162,7 @@ def get_base(thing, **kwargs):
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
     oobb_base.append_full(thing,**p3)
+
 
     if prepare_print:
         #put into a rotation object
@@ -234,11 +241,11 @@ def get_adapter(thing, **kwargs):
     oobb_base.append_full(thing,**p3)
     
     #add cylinder sheath
-    if "_bolt" in extra:
+    if "to_m6_bolt" in extra:
         p3 = copy.deepcopy(kwargs)
         p3["type"] = "p"
         p3["shape"] = f"oobb_cylinder"
-        p3["depth"] = depth
+        p3["depth"] = depth + 3
         p3["radius"] = 5.75/2
         #p3["m"] = "#"
         pos1 = copy.deepcopy(pos)
@@ -252,7 +259,7 @@ def get_adapter(thing, **kwargs):
         p3["type"] = "n"
         p3["shape"] = f"oobb_screw_countersunk"
         p3["radius_name"] = rad_name
-        p3["depth"] = depth
+        p3["depth"] = depth + 3
         #p3["m"] = "#"
         pos1 = copy.deepcopy(pos)         
         p3["pos"] = pos1
@@ -369,7 +376,7 @@ def generate_navigation(folder="scad_output", sort=["width", "height", "thicknes
     for part_id in parts:
         part = parts[part_id]
         kwarg_copy = copy.deepcopy(part["kwargs"])
-        folder_navigation = "navigation"
+        folder_navigation = "navigation_oobb"
         folder_source = part["folder"]
         folder_extra = ""
         for s in sort:
