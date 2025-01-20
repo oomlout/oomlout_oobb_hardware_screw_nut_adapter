@@ -1,0 +1,23 @@
+full_rotations:
+- 0
+- 0
+- 0
+full_shift:
+- 0
+- 0
+- 0
+kwargs:
+  diameter: '45'
+  extra: m5_screw_wood_45_mm_diameter_to_flat
+  height: 1
+  modes:
+  - 3dpr
+  overwrite: true
+  save_type: all
+  screw_size: m5_screw_wood
+  thickness: 4.2
+  to: flat
+  type: _adapter
+  width: 1
+name: adapter
+project_name: ''
