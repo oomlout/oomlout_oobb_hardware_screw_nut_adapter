@@ -9,6 +9,7 @@ full_shift:
 kwargs:
   diameter: '60'
   extra: m3_60_mm_diameter_to_flat
+  finish: ''
   height: 1
   modes:
   - 3dpr
@@ -17,7 +18,7 @@ kwargs:
   screw_size: m3
   thickness: 1.9
   to: flat
-  type: test_adapter
+  type: _adapter
   width: 1
 name: adapter
-project_name: test
+project_name: ''

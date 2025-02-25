@@ -8,18 +8,23 @@ import os
 def main(**kwargs):
     make_scad(**kwargs)
 
+diameter_cap_small = 10
+diameter_cap_large = 12.5
+depth_cap = 3
+
+
 def make_scad(**kwargs):
     parts = []
 
     # save_type variables
     if True:
         filter = ""
-        #filter = "m2_14_mm_diameter_to_m6_bolt"
+        #filter = "cap"
 
 
 
-        #kwargs["save_type"] = "none"
-        kwargs["save_type"] = "all"
+        kwargs["save_type"] = "none"
+        #kwargs["save_type"] = "all"
         
     
         #navigation = False        
@@ -67,38 +72,55 @@ def make_scad(**kwargs):
         
         diams = ["14","30","45","60"]
         tos = ["m6_bolt", "flat"] 
+        finishes = ["","capped"]
 
         thicknesses = [3,6,9,12]
 
         for size in sizes:
             for diam in diams:
                 for to in tos:
-                    
-                    if "_nut" not in size:
-                        screw_size_depth_variable = f"screw_countersunk_height_{size}"
-                        screw_size_depth = oobb_base.gv(screw_size_depth_variable,"3dpr")
-                    else:                        
-                        screw_size_depth_variable = f"nut_depth_{size.replace('_nut','')}"
-                        screw_size_depth = oobb_base.gv(screw_size_depth_variable,"3dpr")
-                    part = copy.deepcopy(part_default)
-                    p3 = copy.deepcopy(kwargs)
-                    p3["thickness"] = screw_size_depth
-                    p3["extra"] = f"{size}_{diam}_mm_diameter_to_{to}"
-                    p3["screw_size"] = size
-                    p3["diameter"] = diam
-                    p3["to"] = to
-                    part["kwargs"] = p3
-                    part["name"] = "adapter"
-                    parts.append(part)
-
-        
+                    for finish in finishes:
+                        if "_nut" not in size:
+                            screw_size_depth_variable = f"screw_countersunk_height_{size}"
+                            screw_size_depth = oobb_base.gv(screw_size_depth_variable,"3dpr")
+                        else:                        
+                            screw_size_depth_variable = f"nut_depth_{size.replace('_nut','')}"
+                            screw_size_depth = oobb_base.gv(screw_size_depth_variable,"3dpr")
+                        part = copy.deepcopy(part_default)
+                        p3 = copy.deepcopy(kwargs)
+                        p3["thickness"] = screw_size_depth
+                        p3["extra"] = f"{size}_{diam}_mm_diameter_to_{to}"
+                        if finish != "":
+                            p3["extra"] = f"{p3['extra']}_{finish}_finish"
+                        p3["finish"] = finish
+                        p3["screw_size"] = size
+                        p3["diameter"] = diam
+                        p3["to"] = to
+                        part["kwargs"] = p3
+                        part["name"] = "adapter"
+                        parts.append(part)
+   
                     for thick in thicknesses:
                         part = copy.deepcopy(part)
                         p3 = copy.deepcopy(p3)
                         p3["thickness"] = thick
                         part["kwargs"] = p3
                         parts.append(part)
-                
+
+
+       #cap
+        sizes = ["small", "large"]
+        for size in sizes:
+            part = copy.deepcopy(part_default)
+            p3 = copy.deepcopy(kwargs)
+            p3["thickness"] = screw_size_depth
+            p3["extra"] = size
+            part["kwargs"] = p3
+            part["name"] = "cap"
+            parts.append(part)
+
+
+
     #make the parts
     if True:
         for part in parts:
@@ -194,7 +216,7 @@ def get_adapter(thing, **kwargs):
     prepare_print = kwargs.get("prepare_print", False)
     extra = kwargs.get("extra", "")
 
-
+    finish = kwargs.get("finish", "")
     
     diam = extra.split("_mm_diameter")[0]
     
@@ -232,25 +254,49 @@ def get_adapter(thing, **kwargs):
     d = depth
     if nut:
         d = d+1.5
+    if finish == "capped":
+        pass
+        d = d + depth_cap
     p3["depth"] = d
     p3["radius"] = float(diam) / 2
     #p3["m"] = "#"
-    pos1 = copy.deepcopy(pos)             
+    pos1 = copy.deepcopy(pos) 
+    if finish == "capped":
+        pos1[2] += depth_cap
     p3["pos"] = pos1
     p3["zz"] = "top"
     oobb_base.append_full(thing,**p3)
     
+    #add cutout for cap
+    if finish == "capped":
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "n"
+        p3["shape"] = f"oobb_cylinder"
+        p3["depth"] = depth_cap
+        if "m5" in rad_name or "m6" in rad_name:
+            p3["radius"] = diameter_cap_large/2
+        else:
+            p3["radius"] = diameter_cap_small/2
+        p3["m"] = "#"
+        pos1 = copy.deepcopy(pos) 
+        pos1[2] += depth_cap/2
+        p3["pos"] = pos1
+        oobb_base.append_full(thing,**p3)
+
     #add cylinder sheath
     if "to_m6_bolt" in extra:
         p3 = copy.deepcopy(kwargs)
         p3["type"] = "p"
         p3["shape"] = f"oobb_cylinder"
-        p3["depth"] = depth + 3
+        dep = depth + 3
+        p3["depth"] = dep
         p3["radius"] = 5.75/2
-        #p3["m"] = "#"
+        p3["m"] = "#"
         pos1 = copy.deepcopy(pos)
+        pos1[2] += -dep/2
         p3["pos"] = pos1
-        p3["zz"] = "top"
+
+        #p3["zz"] = "top"
         oobb_base.append_full(thing,**p3)
 
     #add holes
@@ -303,7 +349,40 @@ def get_adapter(thing, **kwargs):
         p3["shape"] = f"oobb_slice"
         #p3["m"] = "#"
         oobb_base.append_full(thing,**p3)
+
+def get_cap(thing, **kwargs):
+    pos = kwargs.get("pos", [0, 0, 0])
+    depth = kwargs.get("thickness", 4)
+    prepare_print = kwargs.get("prepare_print", False)
+    extra = kwargs.get("extra", "")
+
+
     
+    diam = extra.split("_mm_diameter")[0]
+    
+    
+    clear = 0.25
+    #add cylinder top
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_cylinder"    
+    d = depth_cap    
+    p3["depth"] = d
+    rad = 10
+    if "small" in extra:
+        rad = diameter_cap_small / 2
+    elif "large" in extra:
+        rad = diameter_cap_large / 2
+    rad += -clear
+    p3["radius"] = rad
+    #p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)             
+    p3["pos"] = pos1
+    p3["zz"] = "top"
+    oobb_base.append_full(thing,**p3)
+    
+    
+
 ###### utilities
 
 

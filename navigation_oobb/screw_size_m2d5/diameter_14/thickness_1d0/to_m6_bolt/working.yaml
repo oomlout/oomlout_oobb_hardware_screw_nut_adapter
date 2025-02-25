@@ -9,6 +9,7 @@ full_shift:
 kwargs:
   diameter: '14'
   extra: m2d5_14_mm_diameter_to_m6_bolt
+  finish: ''
   height: 1
   modes:
   - 3dpr
@@ -17,7 +18,7 @@ kwargs:
   screw_size: m2d5
   thickness: 1.0
   to: m6_bolt
-  type: test_adapter
+  type: _adapter
   width: 1
 name: adapter
-project_name: test
+project_name: ''

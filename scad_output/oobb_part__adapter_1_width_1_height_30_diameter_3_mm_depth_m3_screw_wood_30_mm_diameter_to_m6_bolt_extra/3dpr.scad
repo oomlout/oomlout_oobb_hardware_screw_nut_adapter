@@ -6,7 +6,7 @@ difference() {
 		translate(v = [0, 0, -3.0000000000]) {
 			cylinder(h = 3, r = 15.0000000000);
 		}
-		translate(v = [0, 0, -6.0000000000]) {
+		#translate(v = [0, 0, -6.0000000000]) {
 			cylinder(h = 6, r = 2.8750000000);
 		}
 	}
