@@ -23,7 +23,7 @@ def make_scad(**kwargs):
 
 
 
-        kwargs["save_type"] = "none"
+        #kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
         
     
@@ -144,6 +144,7 @@ def make_scad(**kwargs):
         sort.append("thickness")
         sort.append("to")
         sort.append("finish")  
+        sort.append("size")
 
               
         
@@ -367,7 +368,7 @@ def get_cap(thing, **kwargs):
     diam = extra.split("_mm_diameter")[0]
     
     
-    clear = 0.25
+    clear = 0.125
     #add cylinder top
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
@@ -379,9 +380,8 @@ def get_cap(thing, **kwargs):
         rad = diameter_cap_small / 2
     elif "large" in extra:
         rad = diameter_cap_large / 2
-    p3["r1"] = rad
-    rad += clear
-    p3["r2"] = rad
+    p3["r1"] = rad + clear    
+    p3["r2"] = rad - clear
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)             
     p3["pos"] = pos1

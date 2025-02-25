@@ -1,0 +1,24 @@
+full_rotations:
+- 0
+- 0
+- 0
+full_shift:
+- 0
+- 0
+- 0
+kwargs:
+  diameter: '14'
+  extra: m3_nut_14_mm_diameter_to_m6_bolt_capped_finish
+  finish: capped
+  height: 1
+  modes:
+  - 3dpr
+  overwrite: true
+  save_type: all
+  screw_size: m3_nut
+  thickness: 9
+  to: m6_bolt
+  type: _adapter
+  width: 1
+name: adapter
+project_name: ''

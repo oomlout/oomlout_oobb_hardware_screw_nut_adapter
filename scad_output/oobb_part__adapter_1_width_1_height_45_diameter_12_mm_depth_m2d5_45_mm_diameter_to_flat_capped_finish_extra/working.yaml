@@ -1,0 +1,24 @@
+full_rotations:
+- 0
+- 0
+- 0
+full_shift:
+- 0
+- 0
+- 0
+kwargs:
+  diameter: '45'
+  extra: m2d5_45_mm_diameter_to_flat_capped_finish
+  finish: capped
+  height: 1
+  modes:
+  - 3dpr
+  overwrite: true
+  save_type: all
+  screw_size: m2d5
+  thickness: 12
+  to: flat
+  type: _adapter
+  width: 1
+name: adapter
+project_name: ''
