@@ -13,8 +13,8 @@ kwargs:
   height: 1
   modes:
   - 3dpr
-  overwrite: false
-  save_type: none
+  overwrite: true
+  save_type: all
   screw_size: m5_screw_wood
   thickness: 4.2
   to: m6_bolt

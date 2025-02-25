@@ -24,14 +24,14 @@ def make_scad(**kwargs):
 
 
         kwargs["save_type"] = "none"
-        #kwargs["save_type"] = "all"
+        kwargs["save_type"] = "all"
         
     
         #navigation = False        
         navigation = True    
 
-        #kwargs["overwrite"] = True
-        kwargs["overwrite"] = False
+        kwargs["overwrite"] = True
+        #kwargs["overwrite"] = False
         
         #kwargs["modes"] = ["3dpr", "laser", "true"]
         kwargs["modes"] = ["3dpr"]
@@ -56,6 +56,17 @@ def make_scad(**kwargs):
         part_default["full_shift"] = [0, 0, 0]
         part_default["full_rotations"] = [0, 0, 0]
         
+
+        #cap
+        sizes = ["small", "large"]
+        for size in sizes:
+            part = copy.deepcopy(part_default)
+            p3 = copy.deepcopy(kwargs)
+            p3["thickness"] = 3
+            p3["extra"] = size
+            part["kwargs"] = p3
+            part["name"] = "cap"
+            parts.append(part)
 
         sizes  = []
         sizes2 = ["m5", "m4", "m3d5", "m3"]
@@ -109,16 +120,7 @@ def make_scad(**kwargs):
                         parts.append(part)
 
 
-       #cap
-        sizes = ["small", "large"]
-        for size in sizes:
-            part = copy.deepcopy(part_default)
-            p3 = copy.deepcopy(kwargs)
-            p3["thickness"] = screw_size_depth
-            p3["extra"] = size
-            part["kwargs"] = p3
-            part["name"] = "cap"
-            parts.append(part)
+       
 
 
 
@@ -377,8 +379,9 @@ def get_cap(thing, **kwargs):
         rad = diameter_cap_small / 2
     elif "large" in extra:
         rad = diameter_cap_large / 2
-    rad += -clear
-    p3["radius"] = rad
+    p3["r1"] = rad
+    rad += clear
+    p3["r2"] = rad
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)             
     p3["pos"] = pos1
