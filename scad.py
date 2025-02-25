@@ -23,8 +23,8 @@ def make_scad(**kwargs):
 
 
 
-        #kwargs["save_type"] = "none"
-        kwargs["save_type"] = "all"
+        kwargs["save_type"] = "none"
+        #kwargs["save_type"] = "all"
         
     
         #navigation = False        
@@ -64,6 +64,7 @@ def make_scad(**kwargs):
             p3 = copy.deepcopy(kwargs)
             p3["thickness"] = 3
             p3["extra"] = size
+            p3["size_name"] = size
             part["kwargs"] = p3
             part["name"] = "cap"
             parts.append(part)
@@ -144,7 +145,7 @@ def make_scad(**kwargs):
         sort.append("thickness")
         sort.append("to")
         sort.append("finish")  
-        sort.append("size")
+        sort.append("size_name")
 
               
         
