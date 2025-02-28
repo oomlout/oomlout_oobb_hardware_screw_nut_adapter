@@ -24,14 +24,14 @@ def make_scad(**kwargs):
 
 
         kwargs["save_type"] = "none"
-        #kwargs["save_type"] = "all"
+        kwargs["save_type"] = "all"
         
     
         #navigation = False        
         navigation = True    
 
         kwargs["overwrite"] = True
-        #kwargs["overwrite"] = False
+        kwargs["overwrite"] = False
         
         #kwargs["modes"] = ["3dpr", "laser", "true"]
         kwargs["modes"] = ["3dpr"]
@@ -58,16 +58,32 @@ def make_scad(**kwargs):
         
 
         #cap
+        decorations = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","1","2","3","4","5","6","7","8","9","0"]
+        decorations.append("")
+        decorations.append("heart")
+        decorations.append("flower")
+        #bike
+        decorations.append("bike")
+        #smiley
+        decorations.append("smiley")
+
+
+
+
         sizes = ["small", "large"]
         for size in sizes:
-            part = copy.deepcopy(part_default)
-            p3 = copy.deepcopy(kwargs)
-            p3["thickness"] = 3
-            p3["extra"] = size
-            p3["size_name"] = size
-            part["kwargs"] = p3
-            part["name"] = "cap"
-            parts.append(part)
+            for decoration in decorations:
+                part = copy.deepcopy(part_default)
+                p3 = copy.deepcopy(kwargs)
+                p3["thickness"] = 3
+                p3["size_name"] = size
+                p3["decoration"] = decoration
+                p3["extra"] = f"{size}_size"
+                if decoration != "":
+                    p3["extra"] = f"{p3['extra']}_{decoration}_decoration"
+                part["kwargs"] = p3
+                part["name"] = "cap"
+                parts.append(part)
 
         sizes  = []
         sizes2 = ["m5", "m4", "m3d5", "m3"]
@@ -363,7 +379,7 @@ def get_cap(thing, **kwargs):
     depth = kwargs.get("thickness", 4)
     prepare_print = kwargs.get("prepare_print", False)
     extra = kwargs.get("extra", "")
-
+    decoration = kwargs.get("decoration", "")
 
     
     diam = extra.split("_mm_diameter")[0]
@@ -381,14 +397,61 @@ def get_cap(thing, **kwargs):
         rad = diameter_cap_small / 2
     elif "large" in extra:
         rad = diameter_cap_large / 2
-    p3["r1"] = rad + clear    
-    p3["r2"] = rad - clear
+    p3["r2"] = rad + clear    
+    p3["r1"] = rad - clear
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)             
     p3["pos"] = pos1
     p3["zz"] = "top"
     oobb_base.append_full(thing,**p3)
     
+    #add decoration
+    if decoration != "":
+        text = ""    
+        font = "Webdings"
+        size = 15
+        dep = 2
+        text = ""
+        pos1 = copy.deepcopy(pos)
+        if "heart" in decoration:
+            text = "Y"
+            size = 16
+            font = "Webdings"
+            pos1[1] += -0.5
+        elif "flower" in decoration:
+            text = "|"
+            size = 15
+            font = "Wingdings"
+            pos1[1] += 0
+        elif "bike" in decoration:
+            text = "b"
+            size = 15
+            font = "Webdings"
+            pos1[1] += 0
+        elif "smiley" in decoration:
+            text = "J"
+            size = 9
+            font = "Wingdings"
+            pos1[1] += 0
+        elif len(decoration) == 1:
+            text = decoration.upper()
+            size = 12
+            font = "Impact"
+            pos1[1] += 0
+
+            
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "p"
+        p3["shape"] = f"oobb_text"
+        p3["text"] = text
+        p3["depth"] = dep
+        p3["size"] = size
+        p3["font"] = font
+        pos1[2] += 0
+        p3["pos"] = pos1
+        oobb_base.append_full(thing,**p3)
+
+
     
 
 ###### utilities
