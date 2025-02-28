@@ -24,14 +24,14 @@ def make_scad(**kwargs):
 
 
         kwargs["save_type"] = "none"
-        kwargs["save_type"] = "all"
+        #kwargs["save_type"] = "all"
         
     
         #navigation = False        
         navigation = True    
 
         kwargs["overwrite"] = True
-        kwargs["overwrite"] = False
+        #kwargs["overwrite"] = False
         
         #kwargs["modes"] = ["3dpr", "laser", "true"]
         kwargs["modes"] = ["3dpr"]
@@ -162,6 +162,7 @@ def make_scad(**kwargs):
         sort.append("to")
         sort.append("finish")  
         sort.append("size_name")
+        sort.append("decoration")
 
               
         
