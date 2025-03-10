@@ -474,13 +474,14 @@ def get_cap_outside(thing, **kwargs):
     radius_extra = 2/1
 
     clear = 0.075
+    #clear = 1
     #add cylinder main
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
     p3["shape"] = f"oobb_cylinder"    
     d = depth_cap + depth_top
     p3["depth"] = d
-    rad = id + radius_extra
+    rad = id/2 + radius_extra
     
     p3["radius"] = rad
     #p3["m"] = "#"
@@ -496,14 +497,14 @@ def get_cap_outside(thing, **kwargs):
     p3["shape"] = f"oobb_cylinder"    
     d = depth_cap
     p3["depth"] = d
-    rad = id
+    rad = id/2
     
-    p3["r2"] = rad + clear    
-    p3["r1"] = rad - clear
+    p3["r1"] = rad + clear    
+    p3["r2"] = rad - clear
     p3["m"] = "#"
     pos1 = copy.deepcopy(pos)             
     p3["pos"] = pos1
-    pos1[2] += -depth_top
+    pos1[2] += -depth_top #+ 30
     p3["zz"] = "top"
     oobb_base.append_full(thing,**p3)
 
@@ -518,27 +519,27 @@ def get_cap_outside(thing, **kwargs):
         pos1 = copy.deepcopy(pos)
         if "heart" in decoration:
             text = "Y"
-            size = 22
+            size = 11
             font = "Webdings"
             pos1[1] += -0.5
         elif "flower" in decoration:
             text = "|"
-            size = 22
+            size = 11
             font = "Wingdings"
             pos1[1] += 0
         elif "bike" in decoration:
             text = "b"
-            size = 22
+            size = 11
             font = "Webdings"
             pos1[1] += 0
         elif "smiley" in decoration:
             text = "J"
-            size = 22
+            size = 11
             font = "Wingdings"
             pos1[1] += 0
         elif len(decoration) == 1:
             text = decoration.upper()
-            size = 20
+            size = 10
             font = "Impact"
             pos1[1] += 0
 
@@ -707,29 +708,30 @@ def generate_navigation(folder="scad_output", sort=["width", "height", "thicknes
 
     pass
     for part_id in parts:
-        part = parts[part_id]
-        kwarg_copy = copy.deepcopy(part["kwargs"])
-        folder_navigation = "navigation_oobb"
-        folder_source = part["folder"]
-        folder_extra = ""
-        for s in sort:
-            if s == "name":
-                ex = part.get("name", "default")
+        if part_id != "":
+            part = parts[part_id]
+            kwarg_copy = copy.deepcopy(part["kwargs"])
+            folder_navigation = "navigation_oobb"
+            folder_source = part["folder"]
+            folder_extra = ""
+            for s in sort:
+                if s == "name":
+                    ex = part.get("name", "default")
+                else:
+                    ex = kwarg_copy.get(s, "default")
+                folder_extra += f"{s}_{ex}/"
+            #replace "." with d
+            folder_extra = folder_extra.replace(".","d")
+            folder_destination = f"{folder_navigation}/{folder_extra}"
+            if not os.path.exists(folder_destination):
+                os.makedirs(folder_destination)
+            if os.name == 'nt':
+                #copy a full directory
+                command = f'xcopy "{folder_source}" "{folder_destination}" /E /I /Y'
+                print(command)
+                os.system(command)
             else:
-                ex = kwarg_copy.get(s, "default")
-            folder_extra += f"{s}_{ex}/"
-        #replace "." with d
-        folder_extra = folder_extra.replace(".","d")
-        folder_destination = f"{folder_navigation}/{folder_extra}"
-        if not os.path.exists(folder_destination):
-            os.makedirs(folder_destination)
-        if os.name == 'nt':
-            #copy a full directory
-            command = f'xcopy "{folder_source}" "{folder_destination}" /E /I /Y'
-            print(command)
-            os.system(command)
-        else:
-            os.system(f"cp {folder_source} {folder_destination}")
+                os.system(f"cp {folder_source} {folder_destination}")
 
     
 
