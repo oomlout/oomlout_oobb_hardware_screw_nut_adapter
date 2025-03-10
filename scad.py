@@ -16,26 +16,55 @@ depth_cap = 3
 def make_scad(**kwargs):
     parts = []
 
-    # save_type variables
-    if True:
+    typ = kwargs.get("typ", "")
+
+    if typ == "":
+        #setup    
+        #typ = "all"
+        typ = "fast"
+        #typ = "manual"
+
+    oomp_mode = "project"
+    #oomp_mode = "oobb"
+
+    if typ == "all":
+        filter = ""; save_type = "all"; navigation = True; overwrite = True; modes = ["3dpr"]; oomp_run = True
+        #filter = ""; save_type = "all"; navigation = True; overwrite = True; modes = ["3dpr", "laser", "true"]
+    elif typ == "fast":
+        filter = ""; save_type = "none"; navigation = False; overwrite = True; modes = ["3dpr"]; oomp_run = False
+    elif typ == "manual":
+    #filter
         filter = ""
-        #filter = "cap"
+        #filter = "test"
 
-
-
-        kwargs["save_type"] = "none"
-        #kwargs["save_type"] = "all"
+    #save_type
+        save_type = "none"
+        #save_type = "all"
         
-    
-        #navigation = False        
+    #navigation        
+        #navigation = False
         navigation = True    
 
-        kwargs["overwrite"] = True
-        #kwargs["overwrite"] = False
-        
-        #kwargs["modes"] = ["3dpr", "laser", "true"]
-        kwargs["modes"] = ["3dpr"]
-        #kwargs["modes"] = ["laser"]
+    #overwrite
+        overwrite = True
+                
+    #modes
+        #modes = ["3dpr", "laser", "true"]
+        modes = ["3dpr"]
+        #modes = ["laser"]    
+
+    #oomp_run
+        oomp_run = True
+        #oomp_run = False  
+
+    #adding to kwargs
+    kwargs["filter"] = filter
+    kwargs["save_type"] = save_type
+    kwargs["navigation"] = navigation
+    kwargs["overwrite"] = overwrite
+    kwargs["modes"] = modes
+    kwargs["oomp_mode"] = oomp_mode
+    kwargs["oomp_run"] = oomp_run 
 
     # default variables
     if True:
@@ -51,8 +80,45 @@ def make_scad(**kwargs):
     # declare parts
     if True:
 
+        directory_name = os.path.dirname(__file__) 
+        directory_name = directory_name.replace("/", "\\")
+        project_name = directory_name.split("\\")[-1]
+        #max 60 characters
+        length_max = 40
+        if len(project_name) > length_max:
+            project_name = project_name[:length_max]
+            #if ends with a _ remove it 
+            if project_name[-1] == "_":
+                project_name = project_name[:-1]
+                
+        #defaults
+        kwargs["size"] = "oobb"
+        kwargs["width"] = 1
+        kwargs["height"] = 1
+        kwargs["thickness"] = 3
+        #oomp_bits
+        if oomp_mode == "project":
+            kwargs["oomp_classification"] = "project"
+            kwargs["oomp_type"] = "github"
+            kwargs["oomp_size"] = "oomlout"
+            kwargs["oomp_color"] = project_name
+            kwargs["oomp_description_main"] = ""
+            kwargs["oomp_description_extra"] = ""
+            kwargs["oomp_manufacturer"] = ""
+            kwargs["oomp_part_number"] = ""
+        elif oomp_mode == "oobb":
+            kwargs["oomp_classification"] = "oobb"
+            kwargs["oomp_type"] = "part"
+            kwargs["oomp_size"] = ""
+            kwargs["oomp_color"] = ""
+            kwargs["oomp_description_main"] = ""
+            kwargs["oomp_description_extra"] = ""
+            kwargs["oomp_manufacturer"] = ""
+            kwargs["oomp_part_number"] = ""
+
         part_default = {} 
-        part_default["project_name"] = "" ####### neeeds setting
+       
+        part_default["project_name"] = project_name
         part_default["full_shift"] = [0, 0, 0]
         part_default["full_rotations"] = [0, 0, 0]
         
@@ -70,7 +136,7 @@ def make_scad(**kwargs):
 
 
 
-        sizes = ["small", "large"]
+        sizes = ["small", "large", "over"]
         for size in sizes:
             for decoration in decorations:
                 part = copy.deepcopy(part_default)
@@ -78,9 +144,16 @@ def make_scad(**kwargs):
                 p3["thickness"] = 3
                 p3["size_name"] = size
                 p3["decoration"] = decoration
+
                 p3["extra"] = f"{size}_size"
+                id = 0
+                if size == "over":
+                    id = 14
+                    p3["id"] = id
                 if decoration != "":
                     p3["extra"] = f"{p3['extra']}_{decoration}_decoration"
+                if id == 14:
+                    p3["extra"] = f"{p3['extra']}_id_{id}_mm"
                 part["kwargs"] = p3
                 part["name"] = "cap"
                 parts.append(part)
@@ -127,14 +200,14 @@ def make_scad(**kwargs):
                         p3["to"] = to
                         part["kwargs"] = p3
                         part["name"] = "adapter"
-                        parts.append(part)
+                        #parts.append(part)
    
                     for thick in thicknesses:
                         part = copy.deepcopy(part)
                         p3 = copy.deepcopy(p3)
                         p3["thickness"] = thick
                         part["kwargs"] = p3
-                        parts.append(part)
+                        #parts.append(part)
 
 
        
@@ -382,7 +455,116 @@ def get_cap(thing, **kwargs):
     extra = kwargs.get("extra", "")
     decoration = kwargs.get("decoration", "")
 
+    if "over" in extra:
+        get_cap_outside(thing, **kwargs)
+    else:
+        get_cap_inside(thing, **kwargs)
     
+def get_cap_outside(thing, **kwargs):     
+    pos = kwargs.get("pos", [0, 0, 0])
+    depth = kwargs.get("thickness", 4)
+    prepare_print = kwargs.get("prepare_print", False)
+    extra = kwargs.get("extra", "")
+    decoration = kwargs.get("decoration", "")
+    id = kwargs.get("id", 0)
+
+    diam = extra.split("_mm_diameter")[0]
+    
+    depth_top = 2
+    radius_extra = 2/1
+
+    clear = 0.075
+    #add cylinder main
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_cylinder"    
+    d = depth_cap + depth_top
+    p3["depth"] = d
+    rad = id + radius_extra
+    
+    p3["radius"] = rad
+    #p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)             
+    p3["pos"] = pos1
+    p3["zz"] = "top"
+    oobb_base.append_full(thing,**p3)
+    
+    #add internal cylinder cutout
+    
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "negative"
+    p3["shape"] = f"oobb_cylinder"    
+    d = depth_cap
+    p3["depth"] = d
+    rad = id
+    
+    p3["r2"] = rad + clear    
+    p3["r1"] = rad - clear
+    p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)             
+    p3["pos"] = pos1
+    pos1[2] += -depth_top
+    p3["zz"] = "top"
+    oobb_base.append_full(thing,**p3)
+
+
+    #add decoration
+    if decoration != "":
+        text = ""    
+        font = "Webdings"
+        size = 30
+        dep = 2
+        text = ""
+        pos1 = copy.deepcopy(pos)
+        if "heart" in decoration:
+            text = "Y"
+            size = 22
+            font = "Webdings"
+            pos1[1] += -0.5
+        elif "flower" in decoration:
+            text = "|"
+            size = 22
+            font = "Wingdings"
+            pos1[1] += 0
+        elif "bike" in decoration:
+            text = "b"
+            size = 22
+            font = "Webdings"
+            pos1[1] += 0
+        elif "smiley" in decoration:
+            text = "J"
+            size = 22
+            font = "Wingdings"
+            pos1[1] += 0
+        elif len(decoration) == 1:
+            text = decoration.upper()
+            size = 20
+            font = "Impact"
+            pos1[1] += 0
+
+            
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "negative"
+        p3["shape"] = f"oobb_text"
+        p3["text"] = text
+        dep = 1
+        p3["depth"] = dep
+        p3["size"] = size
+        p3["font"] = font
+        pos1[2] += -dep
+        p3["pos"] = pos1
+        oobb_base.append_full(thing,**p3)
+
+
+    
+def get_cap_inside(thing, **kwargs): 
+    pos = kwargs.get("pos", [0, 0, 0])
+    depth = kwargs.get("thickness", 4)
+    prepare_print = kwargs.get("prepare_print", False)
+    extra = kwargs.get("extra", "")
+    decoration = kwargs.get("decoration", "")
+
+
     diam = extra.split("_mm_diameter")[0]
     
     
