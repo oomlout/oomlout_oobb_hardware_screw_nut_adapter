@@ -174,7 +174,7 @@ def make_scad(**kwargs):
         for size in sizes2:
             sizes.append(f"{size}")
         
-        diams = ["14","30","45","60"]
+        diams = ["14","20","25","30","45","60"]
         tos = ["m6_bolt", "flat"] 
         finishes = ["","capped"]
 
@@ -209,7 +209,7 @@ def make_scad(**kwargs):
                         p3 = copy.deepcopy(p3)
                         p3["thickness"] = thick
                         part["kwargs"] = p3
-                        #parts.append(part)
+                        parts.append(part)
 
 
        
