@@ -1,0 +1,37 @@
+full_rotations:
+- 0
+- 0
+- 0
+full_shift:
+- 0
+- 0
+- 0
+kwargs:
+  diameter: '60'
+  extra: m2d5_60_mm_diameter_to_flat
+  filter: ''
+  finish: ''
+  height: 1
+  modes:
+  - 3dpr
+  navigation: true
+  oomp_classification: project
+  oomp_color: oomlout_oobb_hardware_screw_nut_adapter
+  oomp_description_extra: ''
+  oomp_description_main: ''
+  oomp_manufacturer: ''
+  oomp_mode: project
+  oomp_part_number: ''
+  oomp_run: true
+  oomp_size: oomlout
+  oomp_type: github
+  overwrite: true
+  save_type: all
+  screw_size: m2d5
+  thickness: 1.0
+  to: flat
+  typ: all
+  type: oomlout_oobb_hardware_screw_nut_adapter_adapter
+  width: 1
+name: adapter
+project_name: oomlout_oobb_hardware_screw_nut_adapter

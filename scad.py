@@ -136,6 +136,8 @@ def make_scad(**kwargs):
 
 
 
+        #cap
+
         sizes = ["small", "large", "over"]
         for size in sizes:
             for decoration in decorations:
@@ -176,7 +178,7 @@ def make_scad(**kwargs):
         tos = ["m6_bolt", "flat"] 
         finishes = ["","capped"]
 
-        thicknesses = [3,6,9,12]
+        thicknesses = [3,6,9,12,15,18,21,24,27,30]
 
         for size in sizes:
             for diam in diams:
@@ -200,7 +202,7 @@ def make_scad(**kwargs):
                         p3["to"] = to
                         part["kwargs"] = p3
                         part["name"] = "adapter"
-                        #parts.append(part)
+                        parts.append(part)
    
                     for thick in thicknesses:
                         part = copy.deepcopy(part)
