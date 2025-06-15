@@ -122,7 +122,7 @@ def make_scad(**kwargs):
         part_default["full_shift"] = [0, 0, 0]
         part_default["full_rotations"] = [0, 0, 0]
         
-
+        diams = ["14","20","25","30","45","60"]
         #cap
         decorations = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","1","2","3","4","5","6","7","8","9","0"]
         decorations.append("")
@@ -141,24 +141,27 @@ def make_scad(**kwargs):
         sizes = ["small", "large", "over"]
         for size in sizes:
             for decoration in decorations:
-                part = copy.deepcopy(part_default)
-                p3 = copy.deepcopy(kwargs)
-                p3["thickness"] = 3
-                p3["size_name"] = size
-                p3["decoration"] = decoration
-
-                p3["extra"] = f"{size}_size"
-                id = 0
-                if size == "over":
-                    id = 14
-                    p3["id"] = id
-                if decoration != "":
-                    p3["extra"] = f"{p3['extra']}_{decoration}_decoration"
-                if id == 14:
-                    p3["extra"] = f"{p3['extra']}_id_{id}_mm"
-                part["kwargs"] = p3
-                part["name"] = "cap"
-                parts.append(part)
+                for diam in diams:
+                    part = copy.deepcopy(part_default)
+                    p3 = copy.deepcopy(kwargs)
+                    p3["thickness"] = 3
+                    p3["size_name"] = size
+                    p3["decoration"] = decoration
+                
+                    p3["extra"] = f"{size}_size"
+                    id = 0
+                    if size == "over":
+                        id = diam
+                        p3["id"] = id
+                        p3["diameter"] = diam
+                        p3["extra"] = f"{p3['extra']}_{diam}_diameter"
+                    if decoration != "":
+                        p3["extra"] = f"{p3['extra']}_{decoration}_decoration"
+                    if id == 14:
+                        p3["extra"] = f"{p3['extra']}_id_{id}_mm"
+                    part["kwargs"] = p3
+                    part["name"] = "cap"
+                    parts.append(part)
 
         sizes  = []
         sizes2 = ["m5", "m4", "m3d5", "m3"]
@@ -174,7 +177,7 @@ def make_scad(**kwargs):
         for size in sizes2:
             sizes.append(f"{size}")
         
-        diams = ["14","20","25","30","45","60"]
+        #diams = ["14","20","25","30","45","60"]    #defined earlier now
         tos = ["m6_bolt", "flat"] 
         finishes = ["","capped"]
 
@@ -468,7 +471,7 @@ def get_cap_outside(thing, **kwargs):
     prepare_print = kwargs.get("prepare_print", False)
     extra = kwargs.get("extra", "")
     decoration = kwargs.get("decoration", "")
-    id = kwargs.get("id", 0)
+    id = float(kwargs.get("id", 0))
 
     diam = extra.split("_mm_diameter")[0]
     
