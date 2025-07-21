@@ -31,7 +31,9 @@ def make_scad(**kwargs):
         filter = ""; save_type = "all"; navigation = True; overwrite = True; modes = ["3dpr"]; oomp_run = True
         #filter = ""; save_type = "all"; navigation = True; overwrite = True; modes = ["3dpr", "laser", "true"]
     elif typ == "fast":
-        filter = ""; save_type = "none"; navigation = False; overwrite = True; modes = ["3dpr"]; oomp_run = False
+        #navigation true
+        filter = ""; save_type = "none"; navigation = True; overwrite = True; modes = ["3dpr"]; oomp_run = False
+        #filter = ""; save_type = "none"; navigation = False; overwrite = True; modes = ["3dpr"]; oomp_run = False
     elif typ == "manual":
     #filter
         filter = ""
@@ -199,7 +201,7 @@ def make_scad(**kwargs):
                         p3["extra"] = f"{size}_{diam}_mm_diameter_to_{to}"
                         if finish != "":
                             p3["extra"] = f"{p3['extra']}_{finish}_finish"
-                        p3["finish"] = finish
+                            p3["finish"] = finish
                         p3["screw_size"] = size
                         p3["diameter"] = diam
                         p3["to"] = to
@@ -207,12 +209,12 @@ def make_scad(**kwargs):
                         part["name"] = "adapter"
                         parts.append(part)
    
-                    for thick in thicknesses:
-                        part = copy.deepcopy(part)
-                        p3 = copy.deepcopy(p3)
-                        p3["thickness"] = thick
-                        part["kwargs"] = p3
-                        parts.append(part)
+                        for thick in thicknesses:
+                            part = copy.deepcopy(part)
+                            p3 = copy.deepcopy(p3)
+                            p3["thickness"] = thick
+                            part["kwargs"] = p3
+                            parts.append(part)
 
 
        
@@ -696,6 +698,7 @@ def make_scad_generic(part):
 def generate_navigation(folder="scad_output", sort=["width", "height", "thickness"]):
     #crawl though all directories in scad_output and load all the working.yaml files
     parts = {}
+    print(f"Generating navigation for folder: {folder}")
     for root, dirs, files in os.walk(folder):
         if 'working.yaml' in files:
             yaml_file = os.path.join(root, 'working.yaml')
@@ -709,7 +712,7 @@ def generate_navigation(folder="scad_output", sort=["width", "height", "thicknes
                 part_name = part_name.replace("/","").replace("\\","")
                 parts[part_name] = part
 
-                print(f"Loaded {yaml_file}: {part}")
+                print(f".", end='', flush=True)
 
     pass
     for part_id in parts:

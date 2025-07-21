@@ -1,0 +1,36 @@
+full_rotations:
+- 0
+- 0
+- 0
+full_shift:
+- 0
+- 0
+- 0
+kwargs:
+  diameter: '30'
+  extra: m3_screw_wood_30_mm_diameter_to_m6_bolt
+  filter: ''
+  height: 1
+  modes:
+  - 3dpr
+  navigation: true
+  oomp_classification: project
+  oomp_color: oomlout_oobb_hardware_screw_nut_adapter
+  oomp_description_extra: ''
+  oomp_description_main: ''
+  oomp_manufacturer: ''
+  oomp_mode: project
+  oomp_part_number: ''
+  oomp_run: true
+  oomp_size: oomlout
+  oomp_type: github
+  overwrite: true
+  save_type: all
+  screw_size: m3_screw_wood
+  thickness: 30
+  to: m6_bolt
+  typ: all
+  type: oomlout_oobb_hardware_screw_nut_adapter_adapter
+  width: 1
+name: adapter
+project_name: oomlout_oobb_hardware_screw_nut_adapter
