@@ -1,10 +1,9 @@
 $fn = 50;
 
-
 difference() {
 	union() {
-		translate(v = [0, 0, -3.0000000000]) {
-			cylinder(h = 3, r1 = 6.1750000000, r2 = 6.3250000000);
+		translate(v = [0, 0, -3.0]) {
+			cylinder(h = 3, r1 = 6.175, r2 = 6.325);
 		}
 		linear_extrude(height = 2) {
 			text(font = "Impact", halign = "center", size = 12, text = "9", valign = "center");

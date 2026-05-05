@@ -1,10 +1,9 @@
 $fn = 50;
 
-
 difference() {
 	union() {
-		translate(v = [0, 0, -27.0000000000]) {
-			cylinder(h = 27, r = 10.0000000000);
+		translate(v = [0, 0, -27.0]) {
+			cylinder(h = 27, r = 10.0);
 		}
 	}
 	union() {
@@ -12,17 +11,17 @@ difference() {
 			rotate(a = [0, 0, 0]) {
 				difference() {
 					union() {
-						translate(v = [0, 0, -30.0000000000]) {
-							cylinder(h = 30, r = 1.5000000000);
+						translate(v = [0, 0, -30.0]) {
+							cylinder(h = 30, r = 1.5);
 						}
-						translate(v = [0, 0, -1.9000000000]) {
-							cylinder(h = 1.9000000000, r1 = 1.8000000000, r2 = 3.6000000000);
+						translate(v = [0, 0, -1.9]) {
+							cylinder(h = 1.9, r1 = 1.8, r2 = 3.6);
 						}
-						translate(v = [0, 0, -30.0000000000]) {
-							cylinder(h = 30, r = 1.8000000000);
+						translate(v = [0, 0, -30.0]) {
+							cylinder(h = 30, r = 1.8);
 						}
-						translate(v = [0, 0, -30.0000000000]) {
-							cylinder(h = 30, r = 1.5000000000);
+						translate(v = [0, 0, -30.0]) {
+							cylinder(h = 30, r = 1.5);
 						}
 					}
 					union();

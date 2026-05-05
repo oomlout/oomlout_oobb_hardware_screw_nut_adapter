@@ -191,10 +191,10 @@ def make_scad(**kwargs):
                     for finish in finishes:
                         if "_nut" not in size:
                             screw_size_depth_variable = f"screw_countersunk_height_{size}"
-                            screw_size_depth = oobb_base.gv(screw_size_depth_variable,"3dpr")
+                            screw_size_depth = oobb.gv(screw_size_depth_variable,"3dpr")
                         else:                        
                             screw_size_depth_variable = f"nut_depth_{size.replace('_nut','')}"
-                            screw_size_depth = oobb_base.gv(screw_size_depth_variable,"3dpr")
+                            screw_size_depth = oobb.gv(screw_size_depth_variable,"3dpr")
                         part = copy.deepcopy(part_default)
                         p3 = copy.deepcopy(kwargs)
                         p3["thickness"] = screw_size_depth
@@ -275,7 +275,7 @@ def get_base(thing, **kwargs):
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
-    oobb_base.append_full(thing,**p3)
+    oobb.append_full(thing,**p3)
     
     
     #add holes
@@ -288,7 +288,7 @@ def get_base(thing, **kwargs):
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
-    oobb_base.append_full(thing,**p3)
+    oobb.append_full(thing,**p3)
 
 
     if prepare_print:
@@ -311,7 +311,7 @@ def get_base(thing, **kwargs):
         p3["type"] = "n"
         p3["shape"] = f"oobb_slice"
         #p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
+        oobb.append_full(thing,**p3)
     
 ###### utilities
 
@@ -370,7 +370,7 @@ def get_adapter(thing, **kwargs):
         pos1[2] += depth_cap
     p3["pos"] = pos1
     p3["zz"] = "top"
-    oobb_base.append_full(thing,**p3)
+    oobb.append_full(thing,**p3)
     
     #add cutout for cap
     if finish == "capped":
@@ -386,7 +386,7 @@ def get_adapter(thing, **kwargs):
         pos1 = copy.deepcopy(pos) 
         pos1[2] += depth_cap/2
         p3["pos"] = pos1
-        oobb_base.append_full(thing,**p3)
+        oobb.append_full(thing,**p3)
 
     #add cylinder sheath
     if "to_m6_bolt" in extra:
@@ -402,7 +402,7 @@ def get_adapter(thing, **kwargs):
         p3["pos"] = pos1
 
         #p3["zz"] = "top"
-        oobb_base.append_full(thing,**p3)
+        oobb.append_full(thing,**p3)
 
     #add holes
     if not nut:
@@ -414,7 +414,7 @@ def get_adapter(thing, **kwargs):
         #p3["m"] = "#"
         pos1 = copy.deepcopy(pos)         
         p3["pos"] = pos1
-        oobb_base.append_full(thing,**p3)
+        oobb.append_full(thing,**p3)
     elif nut:
         p3 = copy.deepcopy(kwargs)
         p3["type"] = "n"
@@ -425,12 +425,12 @@ def get_adapter(thing, **kwargs):
         p3["zz"] = "top"
         pos1 = copy.deepcopy(pos)         
         p3["pos"] = pos1
-        oobb_base.append_full(thing,**p3)
+        oobb.append_full(thing,**p3)
         #add hole
         p4 = copy.deepcopy(p3)
         p4["shape"] = f"oobb_hole"
         p4["m"] = "#"
-        oobb_base.append_full(thing,**p4)
+        oobb.append_full(thing,**p4)
 
 
     if prepare_print:
@@ -453,7 +453,7 @@ def get_adapter(thing, **kwargs):
         p3["type"] = "n"
         p3["shape"] = f"oobb_slice"
         #p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
+        oobb.append_full(thing,**p3)
 
 def get_cap(thing, **kwargs):
     pos = kwargs.get("pos", [0, 0, 0])
@@ -495,7 +495,7 @@ def get_cap_outside(thing, **kwargs):
     pos1 = copy.deepcopy(pos)             
     p3["pos"] = pos1
     p3["zz"] = "top"
-    oobb_base.append_full(thing,**p3)
+    oobb.append_full(thing,**p3)
     
     #add internal cylinder cutout
     
@@ -513,7 +513,7 @@ def get_cap_outside(thing, **kwargs):
     p3["pos"] = pos1
     pos1[2] += -depth_top #+ 30
     p3["zz"] = "top"
-    oobb_base.append_full(thing,**p3)
+    oobb.append_full(thing,**p3)
 
 
     #add decoration
@@ -561,7 +561,7 @@ def get_cap_outside(thing, **kwargs):
         p3["font"] = font
         pos1[2] += -dep
         p3["pos"] = pos1
-        oobb_base.append_full(thing,**p3)
+        oobb.append_full(thing,**p3)
 
 
     
@@ -594,7 +594,7 @@ def get_cap_inside(thing, **kwargs):
     pos1 = copy.deepcopy(pos)             
     p3["pos"] = pos1
     p3["zz"] = "top"
-    oobb_base.append_full(thing,**p3)
+    oobb.append_full(thing,**p3)
     
     #add decoration
     if decoration != "":
@@ -640,7 +640,7 @@ def get_cap_inside(thing, **kwargs):
         p3["font"] = font
         pos1[2] += 0
         p3["pos"] = pos1
-        oobb_base.append_full(thing,**p3)
+        oobb.append_full(thing,**p3)
 
 
     
@@ -663,7 +663,7 @@ def make_scad_generic(part):
 
     kwargs["type"] = f"{project_name}_{name}"
 
-    thing = oobb_base.get_default_thing(**kwargs)
+    thing = oobb.get_default_thing(**kwargs)
     kwargs.pop("size","")
 
     #get the part from the function get_{name}"
