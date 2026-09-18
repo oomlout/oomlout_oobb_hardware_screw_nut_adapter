@@ -21,13 +21,14 @@ kwargs:
   oomp_manufacturer: ''
   oomp_mode: project
   oomp_part_number: ''
-  oomp_run: false
+  oomp_run: true
   oomp_size: oomlout
   oomp_type: github
   overwrite: true
-  save_type: none
+  save_type: all
   size_name: small
   thickness: 3
+  typ: all
   type: oomlout_oobb_hardware_screw_nut_adapter_cap
   width: 1
 name: cap

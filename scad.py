@@ -124,7 +124,7 @@ def make_scad(**kwargs):
         part_default["full_shift"] = [0, 0, 0]
         part_default["full_rotations"] = [0, 0, 0]
         
-        diams = ["14","20","25","30","45","60"]
+        diams = ["8","14","20","25","30","45","60"]
         #cap
         decorations = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","1","2","3","4","5","6","7","8","9","0"]
         decorations.append("")
